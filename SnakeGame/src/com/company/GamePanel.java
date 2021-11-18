@@ -17,7 +17,7 @@ public class GamePanel extends JPanel implements ActionListener {
     final int x[] = new int[GAME_UNITS];
     final int y[] = new int[GAME_UNITS];
     int bodyParts = 6;
-    int appleEaten;
+    int applesEaten;
     int appleX;
     int appleY;
     char direction = 'R';
@@ -44,22 +44,30 @@ public class GamePanel extends JPanel implements ActionListener {
         draw(g);
     }
     public void draw(Graphics g) {
-        for(int i=0; i<SCREEN_HEIGHT/UNIT_SIZE; i++) {
-            g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
-            g.drawLine(0,i*UNIT_SIZE, SCREEN_HEIGHT,i*UNIT_SIZE);
-        }
-        g.setColor(Color.red);
-        g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
+        if(running) {
+            for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
+                g.drawLine(i * UNIT_SIZE, 0, i * UNIT_SIZE, SCREEN_HEIGHT);
+                g.drawLine(0, i * UNIT_SIZE, SCREEN_HEIGHT, i * UNIT_SIZE);
+            }
+            g.setColor(Color.red);
+            g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
-        for(int i=0; i<bodyParts; i++) {
-            if (i==0) {
-                g.setColor(Color.blue);
-                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+            for (int i = 0; i < bodyParts; i++) {
+                if (i == 0) {
+                    g.setColor(new Color(60, 0, 180));
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                } else {
+                    g.setColor(Color.blue);
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                }
             }
-            else {
-                g.setColor(new Color(60, 0, 180));
-                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
-            }
+            g.setColor(Color.red);
+            g.setFont(new Font("Ink Free", Font.BOLD, 40));
+            FontMetrics metrics = getFontMetrics(g.getFont());
+            g.drawString("Score: "+applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: "+applesEaten))/2, g.getFont().getSize());
+        }
+        else {
+            gameOver(g);
         }
     }
     public void newApple() {
@@ -86,7 +94,13 @@ public class GamePanel extends JPanel implements ActionListener {
                 break;
         }
     }
-    public void checkApple() {}
+    public void checkApple() {
+        if((x[0] == appleX) && (y[0] == appleY)) {
+            bodyParts++;
+            applesEaten++;
+            newApple();
+        }
+    }
     public void checkCollision() {
         //check if head collides with body
         for(int i=bodyParts; i>0; i--) {
@@ -113,7 +127,18 @@ public class GamePanel extends JPanel implements ActionListener {
             timer.stop();
         }
     }
-    public void gameOver(Graphics g) {}
+    public void gameOver(Graphics g) {
+        // Score
+        g.setColor(Color.red);
+        g.setFont(new Font("Ink Free", Font.BOLD, 40));
+        FontMetrics metrics1 = getFontMetrics(g.getFont());
+        g.drawString("Score: "+applesEaten, (SCREEN_WIDTH - metrics1.stringWidth("Score: "+applesEaten))/2, g.getFont().getSize());
+        // Game Over text
+        g.setColor(Color.red);
+        g.setFont(new Font("Ink Free", Font.BOLD, 75));
+        FontMetrics metrics2 = getFontMetrics(g.getFont());
+        g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over"))/2, SCREEN_HEIGHT/2);
+    }
     @Override
     public void actionPerformed(ActionEvent e) {
         if(running) {
@@ -126,7 +151,29 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public class MyKeyAdapter extends KeyAdapter {
         @Override
-        public void keyPressed(KeyEvent e) {}
+        public void keyPressed(KeyEvent e) {
+            switch(e.getKeyCode()) {
+                case KeyEvent.VK_LEFT:
+                    if(direction != 'R') {
+                        direction = 'L';
+                    }
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    if(direction != 'L') {
+                        direction = 'R';
+                    }
+                    break;
+                case KeyEvent.VK_UP:
+                    if(direction != 'D') {
+                        direction = 'U';
+                    }
+                    break;
+                case KeyEvent.VK_DOWN:
+                    if(direction != 'U') {
+                        direction = 'D';
+                    }
+                    break;
+            }
+        }
     }
-
 }
