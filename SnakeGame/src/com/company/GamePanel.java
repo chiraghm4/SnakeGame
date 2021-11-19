@@ -14,8 +14,8 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int UNIT_SIZE = 20;
     static final int GAME_UNITS = (SCREEN_HEIGHT*SCREEN_WIDTH)/UNIT_SIZE;
     static final int DELAY = 75;
-    final int x[] = new int[GAME_UNITS];
-    final int y[] = new int[GAME_UNITS];
+    final int[] x = new int[GAME_UNITS];
+    final int[] y = new int[GAME_UNITS];
     int bodyParts = 6;
     int applesEaten;
     int appleX;
@@ -55,11 +55,10 @@ public class GamePanel extends JPanel implements ActionListener {
             for (int i = 0; i < bodyParts; i++) {
                 if (i == 0) {
                     g.setColor(new Color(80, 180, 20));
-                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                 } else {
                     g.setColor(Color.green);
-                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                 }
+                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
             }
             g.setColor(Color.red);
             g.setFont(new Font("Ink Free", Font.BOLD, 40));
@@ -71,27 +70,19 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
     public void newApple() {
-        appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
-        appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;
+        appleX = random.nextInt(SCREEN_WIDTH/UNIT_SIZE)*UNIT_SIZE;
+        appleY = random.nextInt(SCREEN_HEIGHT/UNIT_SIZE)*UNIT_SIZE;
     }
     public void move() {
         for(int i=bodyParts; i>0; i--) {
             x[i] = x[i-1];
             y[i] = y[i-1];
         }
-        switch(direction) {
-            case 'U':
-                y[0] = y[0] - UNIT_SIZE;
-                break;
-            case 'D':
-                y[0] = y[0] + UNIT_SIZE;
-                break;
-            case 'L':
-                x[0] = x[0] - UNIT_SIZE;
-                break;
-            case 'R':
-                x[0] = x[0] + UNIT_SIZE;
-                break;
+        switch (direction) {
+            case 'U' -> y[0] = y[0] - UNIT_SIZE;
+            case 'D' -> y[0] = y[0] + UNIT_SIZE;
+            case 'L' -> x[0] = x[0] - UNIT_SIZE;
+            case 'R' -> x[0] = x[0] + UNIT_SIZE;
         }
     }
     public void checkApple() {
@@ -104,8 +95,10 @@ public class GamePanel extends JPanel implements ActionListener {
     public void checkCollision() {
         //check if head collides with body
         for(int i=bodyParts; i>0; i--) {
-            if((x[0] == x[i]) && (y[0] == y[i]))
+            if ((x[0] == x[i]) && (y[0] == y[i])) {
                 running = false;
+                break;
+            }
         }
         //check if head touches left border
         if(x[0] < 0) {
